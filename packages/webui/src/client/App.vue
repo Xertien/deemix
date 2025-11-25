@@ -5,14 +5,18 @@ import DeezerWarning from "@/components/globals/DeezerWarning.vue";
 import TheContextMenu from "@/components/globals/TheContextMenu.vue";
 import TheQualityModal from "@/components/globals/TheQualityModal.vue";
 import TheTrackPreview from "@/components/globals/TheTrackPreview.vue";
+import MobileLayout from "@/components/layouts/MobileLayout.vue";
 import TheContent from "@/components/TheContent.vue";
 import TheSearchBar from "@/components/TheSearchBar.vue";
 import TheSidebar from "@/components/TheSidebar.vue";
 import { socket } from "@/utils/socket";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
 
 const isSocketConnected = ref(false);
 const loadingText = ref("Connecting to local server...");
+const route = useRoute();
+const isMobileRoute = computed(() => Boolean(route.meta.mobileRoute));
 
 onMounted(() => {
 	isSocketConnected.value = socket.readyState === WebSocket.OPEN;
@@ -30,7 +34,8 @@ onMounted(() => {
 
 <template>
 	<div id="app">
-		<div class="app-container">
+		<MobileLayout v-if="isMobileRoute" />
+		<div v-else class="app-container">
 			<TheSidebar />
 
 			<div class="content-container">

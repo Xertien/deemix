@@ -1,5 +1,6 @@
 import { fetchData } from "@/utils/api-utils";
 import { emitter } from "@/utils/emitter";
+import { hasDesktopOverride, isMobileDevice, setDesktopOverride } from "@/utils/utils";
 import {
 	createRouter,
 	createWebHistory,
@@ -14,6 +15,9 @@ import Favorites from "@/views/FavoritesView.vue";
 import Home from "@/views/HomeView.vue";
 import InfoArl from "@/views/InfoArl.vue";
 import InfoSpotifyFeatures from "@/views/InfoSpotifyFeatures.vue";
+import MobileDownloads from "@/views/MobileDownloadsView.vue";
+import MobileHome from "@/views/MobileHomeView.vue";
+import MobileSearch from "@/views/MobileSearchView.vue";
 import Tracklist from "@/views/TracklistView.vue";
 
 const Search = () => import("@/views/SearchView.vue");
@@ -27,6 +31,33 @@ const routes: RouteRecordRaw[] = [
 		name: "Home",
 		component: Home,
 		meta: {
+			notKeepAlive: true,
+		},
+	},
+	{
+		path: "/mobile",
+		name: "MobileHome",
+		component: MobileHome,
+		meta: {
+			mobileRoute: true,
+			notKeepAlive: true,
+		},
+	},
+	{
+		path: "/mobile/downloads",
+		name: "MobileDownloads",
+		component: MobileDownloads,
+		meta: {
+			mobileRoute: true,
+			notKeepAlive: true,
+		},
+	},
+	{
+		path: "/mobile/search",
+		name: "MobileSearch",
+		component: MobileSearch,
+		meta: {
+			mobileRoute: true,
 			notKeepAlive: true,
 		},
 	},
@@ -119,6 +150,17 @@ const routes: RouteRecordRaw[] = [
 	},
 ];
 
+const MOBILE_ROUTE_NAME = "MobileHome";
+
+function safeDecode(value: string | null): string | null {
+	if (!value) return null;
+	try {
+		return decodeURIComponent(value);
+	} catch {
+		return value;
+	}
+}
+
 const router = createRouter({
 	history: createWebHistory(location.base),
 	routes,
@@ -128,7 +170,45 @@ const router = createRouter({
 });
 
 router.beforeEach((to, _, next) => {
-	if (to.name && to.name !== "Home") {
+	const forcesDesktop = to.query.desktop === "1";
+	const forcesMobile = to.query.mobile === "1";
+
+	if (forcesDesktop) setDesktopOverride(true);
+	if (forcesMobile) setDesktopOverride(false);
+
+	const desktopOverride = hasDesktopOverride();
+	const isMobile = isMobileDevice();
+	const visitingMobileRoute = Boolean(to.meta.mobileRoute);
+	const encodedRedirect =
+		typeof to.query.redirect === "string" ? to.query.redirect : null;
+
+	if (
+		isMobile &&
+		!desktopOverride &&
+		!visitingMobileRoute &&
+		to.name !== MOBILE_ROUTE_NAME
+	) {
+		const redirectTarget = encodeURIComponent(to.fullPath);
+		next({
+			name: MOBILE_ROUTE_NAME,
+			query: { redirect: redirectTarget },
+			replace: true,
+		});
+		return;
+	}
+
+	if (
+		visitingMobileRoute &&
+		(!isMobile || desktopOverride)
+	) {
+		const fallback = safeDecode(encodedRedirect) || "/";
+		next({ path: fallback || "/", query: { desktop: "1" }, replace: true });
+		return;
+	}
+
+	if (to.name === MOBILE_ROUTE_NAME) {
+		document.title = "Deemix Mobile";
+	} else if (to.name && to.name !== "Home") {
 		document.title = to.name.toString() + " · Deemix";
 	} else {
 		document.title = "Deemix";

@@ -2,9 +2,17 @@ services:
   deemix:
     container_name: Deemix
     build: .
+    env_file:
+      - .env
     restart: unless-stopped
-    ports:
-      - 6595:6595
+    network_mode: host
     volumes:
-      - "${DEEMIX_CONFIG_PATH}:/config"   # Set the `DEEMIX_CONFIG_PATH` environment variable in the shell where `docker-compose up` is being ran
-      - "${DEEMIX_MUSIC_PATH}:/downloads" # Set the `DEEMIX_MUSIC_PATH` environment variable in the shell where `docker-compose up` is being ran
+      - "${DEEMIX_CONFIG_PATH}:/config"
+      - "${DEEMIX_MUSIC_PATH}:/downloads"
+    environment:
+      DEEMIX_SERVER_PORT: "${DEEMIX_SERVER_PORT:-6595}"
+      DEEMIX_HOST: "${DEEMIX_HOST:-0.0.0.0}"
+      DEEMIX_SINGLE_USER: "${DEEMIX_SINGLE_USER:-true}"
+      PUID: "${PUID:-0}"
+      PGID: "${PGID:-0}"
+      UMASK_SET: "${UMASK_SET:-022}"

@@ -116,9 +116,41 @@ export function getPropertyWithFallback(
 	return null;
 }
 
+const MOBILE_UA_REGEX =
+	/(Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini)/i;
+const FORCE_DESKTOP_KEY = "deemix:ui:forceDesktop";
+
+export function isMobileDevice(): boolean {
+	if (typeof navigator === "undefined") return false;
+
+	const userAgent = navigator.userAgent || navigator.vendor;
+	const isTouchViewport =
+		typeof window !== "undefined" ? window.innerWidth <= 820 : false;
+
+	return MOBILE_UA_REGEX.test(userAgent) || isTouchViewport;
+}
+
+export function setDesktopOverride(forceDesktop: boolean) {
+	if (typeof window === "undefined") return;
+
+	if (forceDesktop) {
+		window.localStorage.setItem(FORCE_DESKTOP_KEY, "1");
+	} else {
+		window.localStorage.removeItem(FORCE_DESKTOP_KEY);
+	}
+}
+
+export function hasDesktopOverride(): boolean {
+	if (typeof window === "undefined") return false;
+	return window.localStorage.getItem(FORCE_DESKTOP_KEY) === "1";
+}
+
 export default {
 	isValidURL,
 	convertDuration,
 	convertDurationSeparated,
 	debounce,
+	isMobileDevice,
+	setDesktopOverride,
+	hasDesktopOverride,
 };
