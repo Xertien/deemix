@@ -15,6 +15,8 @@ import Favorites from "@/views/FavoritesView.vue";
 import Home from "@/views/HomeView.vue";
 import InfoArl from "@/views/InfoArl.vue";
 import InfoSpotifyFeatures from "@/views/InfoSpotifyFeatures.vue";
+import MobileAlbumDetail from "@/views/MobileAlbumDetailView.vue";
+import MobileArtistDetail from "@/views/MobileArtistDetailView.vue";
 import MobileDownloads from "@/views/MobileDownloadsView.vue";
 import MobileHome from "@/views/MobileHomeView.vue";
 import MobileSearch from "@/views/MobileSearchView.vue";
@@ -56,6 +58,24 @@ const routes: RouteRecordRaw[] = [
 		path: "/mobile/search",
 		name: "MobileSearch",
 		component: MobileSearch,
+		meta: {
+			mobileRoute: true,
+			notKeepAlive: true,
+		},
+	},
+	{
+		path: "/mobile/artist/:id",
+		name: "MobileArtistDetail",
+		component: MobileArtistDetail,
+		meta: {
+			mobileRoute: true,
+			notKeepAlive: true,
+		},
+	},
+	{
+		path: "/mobile/album/:id",
+		name: "MobileAlbumDetail",
+		component: MobileAlbumDetail,
 		meta: {
 			mobileRoute: true,
 			notKeepAlive: true,

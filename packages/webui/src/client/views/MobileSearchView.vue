@@ -133,44 +133,50 @@ function queueLink(link?: string) {
 			<section class="mobile-card mobile-card--list">
 				<h2>Artistes</h2>
 				<div class="mobile-search__grid">
-					<article
+					<RouterLink
 						v-for="artist in results.artists"
 						:key="artist.artistID"
-						class="mobile-search__card"
+						class="mobile-search__card-link"
+						:to="{ name: 'MobileArtistDetail', params: { id: artist.artistID } }"
 					>
-						<p class="mobile-search__title">{{ artist.artistName }}</p>
-						<p class="mobile-search__subtitle">
-							{{ artist.artistAlbumsNumber }} sorties
-						</p>
-						<button
-							type="button"
-							class="mobile-chip mobile-chip--full"
-							@click="queueLink(artist.artistLink)"
-						>
-							Ajouter l'artiste
-						</button>
-					</article>
+						<article class="mobile-search__card">
+							<p class="mobile-search__title">{{ artist.artistName }}</p>
+							<p class="mobile-search__subtitle">
+								{{ artist.artistAlbumsNumber }} sorties
+							</p>
+							<button
+								type="button"
+								class="mobile-chip mobile-chip--full"
+								@click.stop="queueLink(artist.artistLink)"
+							>
+								Ajouter l'artiste
+							</button>
+						</article>
+					</RouterLink>
 				</div>
 			</section>
 
 			<section class="mobile-card mobile-card--list">
 				<h2>Albums & playlists</h2>
 				<div class="mobile-search__grid">
-					<article
+					<RouterLink
 						v-for="album in results.albums"
 						:key="album.albumID"
-						class="mobile-search__card"
+						class="mobile-search__card-link"
+						:to="{ name: 'MobileAlbumDetail', params: { id: album.albumID } }"
 					>
-						<p class="mobile-search__title">{{ album.albumTitle }}</p>
-						<p class="mobile-search__subtitle">{{ album.artistName }}</p>
-						<button
-							type="button"
-							class="mobile-chip mobile-chip--full"
-							@click="queueLink(album.albumLink)"
-						>
-							Ajouter l'album
-						</button>
-					</article>
+						<article class="mobile-search__card">
+							<p class="mobile-search__title">{{ album.albumTitle }}</p>
+							<p class="mobile-search__subtitle">{{ album.artistName }}</p>
+							<button
+								type="button"
+								class="mobile-chip mobile-chip--full"
+								@click.stop="queueLink(album.albumLink)"
+							>
+								Ajouter l'album
+							</button>
+						</article>
+					</RouterLink>
 
 					<article
 						v-for="playlist in results.playlists"
@@ -278,6 +284,11 @@ function queueLink(link?: string) {
 	border-radius: 16px;
 	padding: 0.85rem;
 	background: rgba(255, 255, 255, 0.03);
+}
+
+.mobile-search__card-link {
+	color: inherit;
+	text-decoration: none;
 }
 
 .mobile-chip {

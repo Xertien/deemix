@@ -145,7 +145,11 @@ onMounted(() => {
 					/>
 					<p class="primary-text">{{ release.title }}</p>
 					<p class="secondary-text">{{ release.user.name }}</p>
-					<button type="button" class="mobile-release__action" @click="addToQueue(release.link)">
+					<button
+						type="button"
+						class="mobile-release__action"
+						@click="addToQueue(release.link)"
+					>
 						Ajouter à la file
 					</button>
 				</article>
@@ -162,23 +166,30 @@ onMounted(() => {
 				<span>{{ albums.length }} propositions</span>
 			</div>
 			<div class="mobile-scroll-row">
-				<article
+				<RouterLink
 					v-for="release in albums"
 					:key="release.id"
-					class="mobile-release"
+					class="mobile-release-link"
+					:to="{ name: 'MobileAlbumDetail', params: { id: release.id } }"
 				>
-					<CoverContainer
-						is-rounded
-						:cover="release.cover_medium"
-						:link="release.link"
-						@click.stop="addToQueue(release.link)"
-					/>
-					<p class="primary-text">{{ release.title }}</p>
-					<p class="secondary-text">{{ release.artist.name }}</p>
-					<button type="button" class="mobile-release__action" @click="addToQueue(release.link)">
-						Ajouter à la file
-					</button>
-				</article>
+					<article class="mobile-release">
+						<CoverContainer
+							is-rounded
+							:cover="release.cover_medium"
+							:link="release.link"
+							@click.stop.prevent="addToQueue(release.link)"
+						/>
+						<p class="primary-text">{{ release.title }}</p>
+						<p class="secondary-text">{{ release.artist.name }}</p>
+						<button
+							type="button"
+							class="mobile-release__action"
+							@click.stop.prevent="addToQueue(release.link)"
+						>
+							Ajouter à la file
+						</button>
+					</article>
+				</RouterLink>
 			</div>
 		</section>
 
@@ -316,6 +327,11 @@ onMounted(() => {
 	gap: 1rem;
 	overflow-x: auto;
 	padding-bottom: 0.5rem;
+}
+
+.mobile-release-link {
+	color: inherit;
+	text-decoration: none;
 }
 
 .mobile-release {
